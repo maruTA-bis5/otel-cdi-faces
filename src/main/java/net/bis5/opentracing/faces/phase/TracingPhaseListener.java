@@ -18,7 +18,9 @@ public class TracingPhaseListener implements PhaseListener {
     @Inject
     Instance<Tracer> tracerInstance;
 
+    private final transient ThreadLocal<Span> rootSpan = new ThreadLocal<>();
     private final transient ThreadLocal<Scope> rootScope = new ThreadLocal<>();
+    private final transient ThreadLocal<Span> currentSpan = new ThreadLocal<>();
     private final transient ThreadLocal<Scope> currentScope = new ThreadLocal<>();
 
     public void beforePhase(PhaseEvent event) {
@@ -26,19 +28,26 @@ public class TracingPhaseListener implements PhaseListener {
         Span activeSpan = tracer.activeSpan();
         if (activeSpan == null) {
             activeSpan = tracer.buildSpan("Faces Lifecycle").start();
-            Scope root = tracer.scopeManager().activate(activeSpan, true);
+            Scope root = tracer.scopeManager().activate(activeSpan);
             rootScope.set(root);
+            rootSpan.set(activeSpan);
         }
-        Scope scope= tracer.buildSpan(event.getPhaseId().getName()).asChildOf(activeSpan).startActive(true);
+        Span span = tracer.buildSpan(event.getPhaseId().getName()).asChildOf(activeSpan).start();
+        Scope scope = tracer.scopeManager().activate(span);
         currentScope.set(scope);
+        currentSpan.set(span);
     }
 
     public void afterPhase(PhaseEvent event) {
         currentScope.get().close();
         currentScope.remove();
+        currentSpan.get().finish();
+        currentSpan.remove();
         if (event.getPhaseId() == PhaseId.RENDER_RESPONSE) {
             rootScope.get().close();
             rootScope.remove();
+            rootSpan.get().finish();
+            rootSpan.remove();
         }
     }
 
