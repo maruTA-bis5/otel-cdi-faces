@@ -32,7 +32,7 @@ public class TracingPhaseListener implements PhaseListener {
             rootScope.set(root);
             rootSpan.set(activeSpan);
         }
-        Span span = tracer.buildSpan(event.getPhaseId().getName()).asChildOf(activeSpan).start();
+        Span span = tracer.buildSpan(event.getPhaseId().getName()).start();
         Scope scope = tracer.scopeManager().activate(span);
         currentScope.set(scope);
         currentSpan.set(span);
@@ -43,7 +43,7 @@ public class TracingPhaseListener implements PhaseListener {
         currentScope.remove();
         currentSpan.get().finish();
         currentSpan.remove();
-        if (event.getPhaseId() == PhaseId.RENDER_RESPONSE) {
+        if (event.getPhaseId() == PhaseId.RENDER_RESPONSE && rootSpan.get() != null) {
             rootScope.get().close();
             rootScope.remove();
             rootSpan.get().finish();
