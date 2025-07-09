@@ -1,19 +1,22 @@
-package net.bis5.opentracing.faces.phase;
+package net.bis5.opentelemetry.faces.phase;
 
 import java.util.Map;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.CDI;
-import javax.faces.context.FacesContext;
-import javax.faces.event.PhaseEvent;
-import javax.faces.event.PhaseId;
-import javax.faces.event.PhaseListener;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.PhaseEvent;
+import jakarta.faces.event.PhaseId;
+import jakarta.faces.event.PhaseListener;
 
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-import io.opentracing.contrib.tracerresolver.TracerResolver;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 
+/**
+ * A {@link PhaseListener} that traces the Jakarta Faces lifecycle phases.
+ * It creates a root span for the entire lifecycle and a child span for each phase.
+ */
 public class TracingPhaseListener implements PhaseListener {
 
     private static final long serialVersionUID = 1L;
@@ -23,30 +26,32 @@ public class TracingPhaseListener implements PhaseListener {
     private final transient ThreadLocal<Span> currentSpan = new ThreadLocal<>();
     private final transient ThreadLocal<Scope> currentScope = new ThreadLocal<>();
 
+    @Override
     public void beforePhase(PhaseEvent event) {
         Tracer tracer = getTracer();
-        Span activeSpan = tracer.activeSpan();
+        Span activeSpan = Span.current();
         if (activeSpan == null) {
-            activeSpan = tracer.buildSpan("Faces Lifecycle").start();
-            Scope root = tracer.scopeManager().activate(activeSpan);
+            activeSpan = tracer.spanBuilder("Faces Lifecycle").startSpan();
+            Scope root = activeSpan.makeCurrent();
             rootScope.set(root);
             rootSpan.set(activeSpan);
         }
-        Span span = tracer.buildSpan(event.getPhaseId().getName()).start();
-        Scope scope = tracer.scopeManager().activate(span);
+        Span span = tracer.spanBuilder(event.getPhaseId().getName()).startSpan();
+        Scope scope = span.makeCurrent();
         currentScope.set(scope);
         currentSpan.set(span);
     }
 
+    @Override
     public void afterPhase(PhaseEvent event) {
         currentScope.get().close();
         currentScope.remove();
-        currentSpan.get().finish();
+        currentSpan.get().end();
         currentSpan.remove();
         if (event.getPhaseId() == PhaseId.RENDER_RESPONSE && rootSpan.get() != null) {
             rootScope.get().close();
             rootScope.remove();
-            rootSpan.get().finish();
+            rootSpan.get().end();
             rootSpan.remove();
         }
     }
@@ -63,7 +68,7 @@ public class TracingPhaseListener implements PhaseListener {
         if (!tracerInstance.isUnsatisfied()) {
             return tracerInstance.get();
         }
-        return TracerResolver.resolveTracer();
+        return null;
     }
 
     public PhaseId getPhaseId() {

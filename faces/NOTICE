@@ -13,10 +13,9 @@ under the License.
 
 This project includes:
   CDI APIs under Apache License 2.0
-  Jakarta Annotations API under EPL 2.0 or GPL2 w/ CPE
   Jakarta Dependency Injection under The Apache Software License, Version 2.0
-  Jakarta Interceptors under EPL 2.0 or GPL2 w/ CPE
-  MicroProfile Telemetry for Jakarta Contexts and Dependencies Injection under Apache License, Version 2.0
+  Jakarta Server Faces under EPL 2.0 or GPL2 w/ CPE
+  MicroProfile Telemetry for Jakarta Faces under Apache License, Version 2.0
   OpenTelemetry Instrumentation for Java under The Apache License, Version 2.0
   OpenTelemetry Java under The Apache License, Version 2.0
 
