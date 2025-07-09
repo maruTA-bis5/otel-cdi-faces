@@ -3,10 +3,10 @@
     <parent>
         <groupId>net.bis5.opentelemetry</groupId>
         <artifactId>otel-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>opentelemetry-cdi</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <name>MicroProfile Telemetry for Jakarta Contexts and Dependencies Injection</name>
     <description>Integrate MicroProfile Telemetry with Jakarta Contexts and Dependencies Injection</description>

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.bis5.opentelemetry</groupId>
     <artifactId>otel-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>MicroProfile Telemetry for several Jakarta EE specifications</name>
@@ -19,7 +19,7 @@
         <url>https://github.com/maruTA-bis5/otel-cdi-faces.git</url>
         <connection>scm:git:git://github.com/maruTA-bis5/otel-cdi-faces.git</connection>
         <developerConnection>scm:git:git@github.com:maruTA-bis5/otel-cdi-faces.git</developerConnection>
-        <tag>v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <developers>
         <developer>
