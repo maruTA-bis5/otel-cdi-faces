@@ -8,6 +8,7 @@ import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
 import io.opentelemetry.instrumentation.annotations.SpanAttribute;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.annotation.Priority;
@@ -100,7 +101,7 @@ public class SerializableTraceInterceptor implements Serializable {
             .setParent(Context.current())
             .setAllAttributes(spanAttributes)
             .startSpan();
-        try {
+        try (Scope scope = span.makeCurrent()) {
             return ctx.proceed();
         } catch (Exception e) {
             span.recordException(e);
