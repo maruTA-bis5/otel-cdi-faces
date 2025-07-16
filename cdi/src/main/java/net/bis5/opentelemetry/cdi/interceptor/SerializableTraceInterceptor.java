@@ -15,6 +15,7 @@ import jakarta.inject.Inject;
 import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
+import net.bis5.opentelemetry.cdi.SerializableTracer;
 import net.bis5.opentelemetry.cdi.TracedSerializable;
 
 /**
@@ -26,6 +27,7 @@ import net.bis5.opentelemetry.cdi.TracedSerializable;
 public class SerializableTraceInterceptor implements Serializable {
 
     @Inject
+    @SerializableTracer
     protected Tracer tracer;
 
     @AroundInvoke
