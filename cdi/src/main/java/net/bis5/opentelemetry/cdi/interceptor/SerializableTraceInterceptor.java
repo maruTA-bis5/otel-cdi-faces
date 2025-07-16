@@ -100,7 +100,7 @@ public class SerializableTraceInterceptor implements Serializable {
             .setParent(Context.current())
             .setAllAttributes(spanAttributes)
             .startSpan();
-        try (var scope = span.makeCurrent()) {
+        try (Scope scope = span.makeCurrent()) {
             return ctx.proceed();
         } catch (Exception e) {
             span.recordException(e);
